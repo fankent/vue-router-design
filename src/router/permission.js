@@ -1,4 +1,6 @@
 import { asyncRoutes } from './asyncRoutes'
+import { collectMenuNames } from '@/utils/menu'
+import { filterRoutesByMenu } from '@/utils/route'
 
 export function hasPermission(permission, permissions) {
     if (!permission) return true
@@ -27,4 +29,9 @@ export function addPermissionRoutes(router, permissions) {
     allowedRoutes.forEach(route => {
         router.addRoute(route)
     })
+}
+
+export function generateRoutesByMenus(menus) {
+    const allowNames = collectMenuNames(menus)
+    return filterRoutesByMenu(asyncRoutes, allowNames)
 }

@@ -1,17 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { staticRoutes } from './staticRoutes'
 import { addPermissionRoutes } from './permission'
-import { getCurrentUser } from '@/api/user'
 import { isLoggedIn } from '@/utils/auth'
+import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: staticRoutes,
 })
 
-let isRouteReady = false
-
 router.beforeEach(async (to, from, next) => {
+  const auth = useAuthStore()
+
   // 防止死循环跳转
   if (to.path === '/login') {
     return next()
@@ -21,18 +21,16 @@ router.beforeEach(async (to, from, next) => {
     return next('/login')
   }
 
-  if (!isRouteReady) {
+  if (!auth.isLoaded) {
     try {
-      const { permissions } = await getCurrentUser()
-      addPermissionRoutes(router, permissions)
-      isRouteReady = true
-      next({ ...to, replace: true })
+      await auth.loadUser()
+      addPermissionRoutes(auth.permissions)
+      return next({ ...to, replace: true })
     } catch (e) {
-      next('/login')
+      return next('/login')
     }
-  } else {
-    next()
   }
+  next()
 })
 
 export default router
