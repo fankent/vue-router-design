@@ -12,11 +12,12 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const auth = useAuthStore()
 
-  // 防止死循环跳转
+  // 白名单放行
   if (to.path === '/login') {
     return next()
   }
 
+  // 无token跳转登录页
   if (!isLoggedIn()) {
     return next('/login')
   }
@@ -24,7 +25,7 @@ router.beforeEach(async (to, from, next) => {
   if (!auth.isLoaded) {
     try {
       await auth.loadUser()
-      addPermissionRoutes(auth.permissions)
+      addPermissionRoutes(router, auth.permissions)
       return next({ ...to, replace: true })
     } catch (e) {
       return next('/login')

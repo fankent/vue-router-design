@@ -25,13 +25,15 @@ function filterRoutes(routes, permissions) {
 
 export function addPermissionRoutes(router, permissions) {
     const allowedRoutes = filterRoutes(asyncRoutes, permissions)
-
+    // 根据permissions动态注册路由
     allowedRoutes.forEach(route => {
         router.addRoute(route)
     })
 }
 
 export function generateRoutesByMenus(menus) {
+    // 收集menus的name为数组
     const allowNames = collectMenuNames(menus)
+    // 最终根据allowNames得到展示菜单
     return filterRoutesByMenu(asyncRoutes, allowNames)
 }
