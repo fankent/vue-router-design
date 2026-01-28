@@ -6,7 +6,7 @@ export const useAuthStore = defineStore('auth', {
     state: () => ({
         user: null,
         permissions: [],
-        menus: [], // 页面直接拿这个menus渲染即可
+        menus: [],
         isLoaded: false
     }),
 
